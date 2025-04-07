@@ -7,8 +7,11 @@ dependencies = [
     "openai>=1.0.0",
     "pandas>=1.0.0",
     "openpyxl>=3.0.0",
-    "python-dotenv>=0.20.0", # .envファイル読み込み用
-    "rich>=13.0.0",          # コンソール出力整形用
+    "python-dotenv>=0.20.0",
+    # .envファイル読み込み用
+    "rich>=13.0.0",
+    "tavily-python>=0.5.4",
+    # コンソール出力整形用
 ]
 requires-python = ">=3.8"
 
