@@ -20,6 +20,7 @@
 *   [uv](https://github.com/astral-sh/uv) (Pythonパッケージ管理ツール)
 *   OpenAI API キー
 *   `rich` ライブラリ (コンソール出力整形用、`uv sync` で自動インストールされます)
+*   Tavily Search API(https://tavily.com/)
 
 ## セットアップ
 
@@ -34,9 +35,10 @@
 
 3.  **OpenAI API キーの設定:**
     `utils.py` が `.env` ファイルを読み込みます。
-    プロジェクトルートに `.env` という名前のファイルを作成し、以下のように記述してご自身のOpenAI APIキーを設定してください。
+    プロジェクトルートに `.env` という名前のファイルを作成し、以下のように記述してご自身のOpenAI API及びTavily APIキーを設定してください。
     ```dotenv
     OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+    TAVILY_API_KEY="YOUR_TAVILY_API_KEY"
     ```
     `.env` ファイルは `.gitignore` によってGitの追跡対象から除外されるため、APIキーが誤ってリポジトリにコミットされるのを防ぎます。
 
