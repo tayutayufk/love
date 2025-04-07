@@ -1,0 +1,68 @@
+[
+  {
+    "input_query": "楽天市場 ROLEX 126500LN ブラック オイスター 中古品 \n楽天市場 URL :https://www.rakuten.co.jp/ \n検索結果には、価格、商品ページのURL、出品者、保証書日付、付属品、状態を含めてください。\n",
+    "search_result_text": "楽天市場で「ROLEX 126500LN ブラック オイスター」の中古品を検索した結果、以下の商品が見つかりました。\n\n1. **ロレックス デイトナ 126500LN ブラック メンズ（中古）**\n   - **価格**：4,590,000円\n   - **商品ページURL**：[https://item.rakuten.co.jp/satindollweb/21054681/](https://item.rakuten.co.jp/satindollweb/21054681/)\n   - **出品者**：ロレックス専門店サテンドール\n   - **保証書日付**：2024年3月\n   - **付属品**：国際保証カード、BOX、弊社保証カード、弊社オーナーズガイド\n   - **状態**：Aランク（小傷あり）\n\n2. **ロレックス コスモグラフ デイトナ 126500LN ブラック メンズ 腕時計（中古）**\n   - **価格**：4,658,000円\n   - **商品ページURL**：[https://item.rakuten.co.jp/ippuukishi/ik-00-0647197/](https://item.rakuten.co.jp/ippuukishi/ik-00-0647197/)\n   - **出品者**：ウォッチニアン ブランド品専門店\n   - **保証書日付**：2024年6月\n   - **付属品**：メーカー保証書、メーカー箱、冊子\n   - **状態**：Aランク（バックルに僅かな小傷あり）\n\n3. **ロレックス デイトナ ブラック文字盤 126500LN（中古）**\n   - **価格**：4,450,000円\n   - **商品ページURL**：[https://item.rakuten.co.jp/the-ticken/ro126500ln-10708/](https://item.rakuten.co.jp/the-ticken/ro126500ln-10708/)\n   - **出品者**：ティッケン楽天市場店\n   - **保証書日付**：2024年（詳細日付不明）\n   - **付属品**：内箱、外箱、ギャランティーカード、デイトナ冊子、グリーンタグ\n   - **状態**：未使用品（ブレスレットのコマ調整も未実施）\n\nこれらの商品は、楽天市場で販売されている中古のロレックス デイトナ 126500LN ブラック オイスターです。価格や付属品、状態などが異なりますので、詳細は各商品ページをご確認ください。 ",
+    "extracted_results": [
+      {
+        "name": "ロレックス デイトナ 126500LN ブラック メンズ（中古）",
+        "price": 4590000,
+        "url": "https://item.rakuten.co.jp/satindollweb/21054681/",
+        "seller": "ロレックス専門店サテンドール",
+        "warranty_date": "2024年3月",
+        "accessories": "国際保証カード、BOX、弊社保証カード、弊社オーナーズガイド",
+        "condition": "Aランク（小傷あり）"
+      },
+      {
+        "name": "ロレックス コスモグラフ デイトナ 126500LN ブラック メンズ 腕時計（中古）",
+        "price": 4658000,
+        "url": "https://item.rakuten.co.jp/ippuukishi/ik-00-0647197/",
+        "seller": "ウォッチニアン ブランド品専門店",
+        "warranty_date": "2024年6月",
+        "accessories": "メーカー保証書、メーカー箱、冊子",
+        "condition": "Aランク（バックルに僅かな小傷あり）"
+      },
+      {
+        "name": "ロレックス デイトナ ブラック文字盤 126500LN（中古）",
+        "price": 4450000,
+        "url": "https://item.rakuten.co.jp/the-ticken/ro126500ln-10708/",
+        "seller": "ティッケン楽天市場店",
+        "warranty_date": "2024年（詳細日付不明）",
+        "accessories": "内箱、外箱、ギャランティーカード、デイトナ冊子、グリーンタグ",
+        "condition": "未使用品（ブレスレットのコマ調整も未実施）"
+      }
+    ]
+  },
+  {
+    "input_query": "楽天市場 ROLEX 126500LN ホワイト オイスター 中古品 \n楽天市場 URL :https://www.rakuten.co.jp/ \n検索結果には、価格、商品ページのURL、出品者、保証書日付、付属品、状態を含めてください。\n",
+    "search_result_text": "楽天市場で「ROLEX 126500LN ホワイト オイスター」の中古品を検索した結果、以下の商品が見つかりました。\n\n1. **商品名**: ロレックス デイトナ 126500LN ホワイト ランダム番 メンズ\n   - **価格**: 5,048,000円\n   - **商品ページURL**: ([item.rakuten.co.jp](https://item.rakuten.co.jp/auc-rasin/s-126500lnwh/?utm_source=openai))\n   - **出品者**: GINZA RASIN 楽天市場店\n   - **保証書日付**: 2024年10月\n   - **付属品**: 外箱、内箱、取扱説明書、保証書\n   - **状態**: 未使用\n\n2. **商品名**: ロレックス コスモグラフ デイトナ 126500LN ホワイト\n   - **価格**: 4,998,000円\n   - **商品ページURL**: ([search.rakuten.co.jp](https://search.rakuten.co.jp/search/mall/%E3%83%AD%E3%83%AC%E3%83%83%E3%82%AF%E3%82%B9%2B126500ln%2B%E4%B8%AD%E5%8F%A4/558929/?utm_source=openai))\n   - **出品者**: ロレックス専門店サテンドール\n   - **保証書日付**: 記載なし\n   - **付属品**: 記載なし\n   - **状態**: 中古品-非常に良い\n\n3. **商品名**: ロレックス デイトナ 126500LN ホワイト 保証書2024年 付属品完品 ランダムシリアル\n   - **価格**: 5,098,000円\n   - **商品ページURL**: ([search.rakuten.co.jp](https://search.rakuten.co.jp/search/mall/%E3%83%AD%E3%83%AC%E3%83%83%E3%82%AF%E3%82%B9%2B126500ln%2B%E4%B8%AD%E5%8F%A4/558929/?utm_source=openai))\n   - **出品者**: GMT\n   - **保証書日付**: 2024年\n   - **付属品**: 完品\n   - **状態**: 中古\n\nこれらの商品は、楽天市場で「ROLEX 126500LN ホワイト オイスター 中古品」として掲載されています。詳細な情報や最新の在庫状況については、各商品ページをご確認ください。 ",
+    "extracted_results": [
+      {
+        "name": "ロレックス デイトナ 126500LN ホワイト ランダム番 メンズ",
+        "price": 5048000,
+        "url": "https://item.rakuten.co.jp/auc-rasin/s-126500lnwh/",
+        "seller": "GINZA RASIN 楽天市場店",
+        "warranty_date": "2024年10月",
+        "accessories": "外箱、内箱、取扱説明書、保証書",
+        "condition": "未使用"
+      },
+      {
+        "name": "ロレックス コスモグラフ デイトナ 126500LN ホワイト",
+        "price": 4998000,
+        "url": "https://search.rakuten.co.jp/search/mall/%E3%83%AD%E3%83%AC%E3%83%83%E3%82%AF%E3%82%B9%2B126500ln%2B%E4%B8%AD%E5%8F%A4/558929/",
+        "seller": "ロレックス専門店サテンドール",
+        "warranty_date": null,
+        "accessories": null,
+        "condition": "中古品-非常に良い"
+      },
+      {
+        "name": "ロレックス デイトナ 126500LN ホワイト 保証書2024年 付属品完品 ランダムシリアル",
+        "price": 5098000,
+        "url": "https://search.rakuten.co.jp/search/mall/%E3%83%AD%E3%83%AC%E3%83%83%E3%82%AF%E3%82%B9%2B126500ln%2B%E4%B8%AD%E5%8F%A4/558929/",
+        "seller": "GMT",
+        "warranty_date": "2024年",
+        "accessories": "完品",
+        "condition": "中古"
+      }
+    ]
+  }
+]

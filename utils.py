@@ -1,6 +1,7 @@
 import openai
 import os
 import re
+import json # JSONを扱うためにインポート
 from dotenv import load_dotenv
 
 # .envファイルから環境変数を読み込む
@@ -19,7 +20,7 @@ def search_web(query):
     response = client.chat.completions.create(
         model="gpt-4o-search-preview",
         web_search_options={
-            "search_context_size": "medium",  # 検索深度
+            "search_context_size": "high",  # 検索深度
             "user_location": {
                 "type": "approximate",
                 "approximate": {
@@ -28,94 +29,88 @@ def search_web(query):
             },
         },
         messages=[{"role": "user", "content": query}],
-    )
+        # temperature=0.0 # gpt-4o-search-previewはこのパラメータをサポートしていないため削除
+    ) # ★閉じ括弧を追加
     return response.choices[0].message.content
 
-def extract_prices(text):
-    """テキストから価格情報を抽出し、リストで返す関数"""
-    # 円マークまたは「円」を含む価格パターン、または「価格：」の後の数字を検索
-    prices_with_symbol = re.findall(r'[¥￥]\d{1,3}(?:,\d{3})*', text) # ¥5,000,000 形式
-    prices_with_unit = re.findall(r'\d{1,3}(?:,\d{3})*円', text) # 5,000,000円 形式
-    prices_after_label = re.findall(r'価格：\s*(\d{1,3}(?:,\d{3})*)', text) # 価格： 5,000,000 形式
-
-    prices = prices_with_symbol + prices_with_unit + prices_after_label
-
-    # 重複を除き、数値に変換してソート
-    numeric_prices = []
-    seen_prices = set()
-    for p_str in prices:
-        # 数字とカンマ以外を除去
-        cleaned_p = re.sub(r'[^\d,]', '', p_str)
-        try:
-            price_int = int(cleaned_p.replace(',', ''))
-            if price_int not in seen_prices:
-                 # 価格として妥当な範囲かチェック (例: 10万円以上、1億円未満)
-                if 100000 <= price_int < 100000000:
-                    numeric_prices.append(price_int)
-                    seen_prices.add(price_int)
-        except ValueError:
-            continue # 数値変換できないものは無視
-
-    # 昇順にソート
-    numeric_prices.sort()
-
-    # 表示用にフォーマット
-    formatted_prices = [f"¥{p:,}" for p in numeric_prices]
-
-    return formatted_prices
-
-def extract_details(text):
-    """テキストから詳細情報（出品者、保証書日付、付属品、状態）を抽出する関数"""
-    details = {
-        '出品者': None,
-        '保証書日付': None,
-        '付属品': None,
-        '状態': None,
+def extract_multiple_watch_info_json(text):
+    """LLM(gpt-4o-mini)を使用してテキストから複数の時計情報を抽出し、JSONオブジェクトのリスト(List[Dict])で返す関数"""
+    # 個々の時計情報のスキーマ
+    single_watch_info_schema = {
+        "type": "object",
+        "properties": {
+            "name": {"type": ["string", "null"], "description": "時計の名称やタイトル"},
+            "price": {"type": ["integer", "null"], "description": "価格（日本円、整数）。見つからない場合はnull。10万円以上1億円未満。"},
+            "url": {"type": ["string", "null"], "description": "商品ページのURL。見つからない場合はnull。末尾の'?utm_source=openai'は削除する。"},
+            "seller": {"type": ["string", "null"], "description": "出品者名。見つからない場合はnull。"},
+            "warranty_date": {"type": ["string", "null"], "description": "保証書日付。見つからない場合はnull。"},
+            "accessories": {"type": ["string", "null"], "description": "付属品の情報。見つからない場合はnull。"},
+            "condition": {"type": ["string", "null"], "description": "時計の状態。見つからない場合はnull。"}
+        },
+        "required": ["name", "price", "url", "seller", "warranty_date", "accessories", "condition"]
     }
 
-    # 出品者 (例: "出品者：〇〇", "販売店：〇〇") - 精度は低い可能性あり
-    seller_match = re.search(r'(?:出品者|販売店|ショップ)\s*[:：]\s*([^\n\s]+)', text)
-    if seller_match:
-        details['出品者'] = seller_match.group(1).strip()
-    else:
-         # リンク元などから推測 (例: GINZA RASIN 楽天市場店) - さらに精度低い
-        seller_link_match = re.search(r'([^\s]+(?:店|楽天市場店|ショップ))\s*\(', text, re.IGNORECASE)
-        if seller_link_match:
-             details['出品者'] = seller_link_match.group(1).strip()
+    # 複数の時計情報をリストで返すためのスキーマ
+    multiple_watch_info_schema = {
+        "type": "object",
+        "properties": {
+            "watches": {
+                "type": "array",
+                "description": "抽出された時計情報のリスト。見つからない場合は空のリスト。",
+                "items": single_watch_info_schema
+            }
+        },
+        "required": ["watches"]
+    }
 
+    prompt = f"""以下のWeb検索結果のテキストから、比較可能な中古時計の情報を複数抽出し、指定されたJSONスキーマに従ってJSONオブジェクトのリストで返してください。
+各時計について、以下の情報を抽出してください： name, price (10万円以上1億円未満、整数、なければnull), url ('?utm_source=openai'削除), seller, warranty_date, accessories, condition。
+該当情報がない場合は null としてください。抽出できる時計がなければ空のリスト `[]` を含むJSONを返してください。
 
-    # 保証書日付 (例: "保証書日付：YYYY年MM月", "ギャラ：YYYY/MM") - 形式多様
-    date_match = re.search(r'(?:保証書日付|ギャラ(?:ンティ)?)\s*[:：]\s*(\d{4}年?\d{1,2}月?|\d{4}/\d{1,2})', text)
-    if date_match:
-        details['保証書日付'] = date_match.group(1).strip()
+テキスト：
+\"\"\"
+{text}
+\"\"\"
+"""
 
-    # 付属品 (例: "付属品：箱、保証書", "付属品：あり")
-    # "保証書"と"箱"（または"ボックス"）が含まれるかチェック
-    accessories = []
-    if re.search(r'保証書', text):
-        accessories.append('保証書')
-    if re.search(r'箱|ボックス', text):
-        accessories.append('箱')
-    if accessories:
-        details['付属品'] = '、'.join(accessories)
-    else:
-        # "付属品：あり/なし"のような記述を探す
-        付属品_match = re.search(r'付属品\s*[:：]\s*(あり|なし|[^\n]+)', text)
-        if 付属品_match:
-             details['付属品'] = 付属品_match.group(1).strip()
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            response_format={"type": "json_object"}, # スキーマはプロンプトで指示
+            messages=[
+                {"role": "system", "content": f"あなたはテキストから複数の時計情報を抽出し、以下のJSONスキーマに従ってJSONオブジェクトで出力するアシスタントです。\nスキーマ:\n{json.dumps(multiple_watch_info_schema, indent=2, ensure_ascii=False)}"},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.0
+        )
+        result_json_str = response.choices[0].message.content
+        result_data = json.loads(result_json_str)
+        watches_list = result_data.get("watches", [])
 
+        # 各時計情報のバリデーションと整形
+        validated_watches = []
+        for watch_info in watches_list:
+            # URLから ?utm_source=openai を削除
+            if watch_info.get("url") and isinstance(watch_info["url"], str):
+                watch_info["url"] = watch_info["url"].split('?utm_source=openai')[0]
 
-    # 状態 (例: "状態：中古A", "コンディション：良好") - 非常に多様
-    condition_match = re.search(r'(?:状態|コンディション)\s*[:：]\s*([^\n]+)', text)
-    if condition_match:
-        details['状態'] = condition_match.group(1).strip().split(' ')[0] # 最初の単語だけ取るなど簡易的に
-    else:
-        # "中古"、"未使用"、"新品同様"などのキーワードを探す
-        if re.search(r'新品同様|未使用|極美品', text):
-             details['状態'] = '新品同様/未使用'
-        elif re.search(r'中古[A-Z]?ランク|美品|良好', text):
-             details['状態'] = '中古 (美品/良好)'
-        elif re.search(r'中古', text):
-             details['状態'] = '中古'
+            # 価格のバリデーション
+            if watch_info.get("price") is not None:
+                if not (isinstance(watch_info["price"], int) and 100000 <= watch_info["price"] < 100000000):
+                    watch_info["price"] = None
 
-    return details
+            # スキーマに定義されたキーが存在するか確認し、なければnullで補完
+            for key in single_watch_info_schema["properties"].keys():
+                if key not in watch_info:
+                    watch_info[key] = None
+            validated_watches.append(watch_info)
+
+        return validated_watches # 辞書のリストを返す
+
+    except json.JSONDecodeError as e:
+        print(f"  -> 情報抽出エラー (JSONデコード失敗): {repr(e)}")
+        print(f"  -> 不正なJSON文字列: {result_json_str}")
+        return [] # エラー時は空リスト
+    except Exception as e:
+        print(f"  -> 情報抽出エラー (API呼び出し等): {repr(e)}")
+        return [] # エラー時は空リスト

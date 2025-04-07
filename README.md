@@ -53,19 +53,20 @@
 
 *   **通常実行 (全件処理):**
     ```powershell
-    uv run python process_excel.py
+    $env:PYTHONIOENCODING='utf-8'; uv run python process_excel.py
     ```
     `target.xlsx` を読み込み、全件を処理して `result.xlsx` に結果を出力します。
+    (Windows環境で文字化けが発生する場合は、`$env:PYTHONIOENCODING='utf-8';` を先頭に追加してください。)
 
 *   **テスト実行 (最初の5件のみ):**
     ```powershell
-    uv run python process_excel.py --test
+    $env:PYTHONIOENCODING='utf-8'; uv run python process_excel.py --test
     ```
     `target.xlsx` を読み込み、最初の5件のみ処理して `result_test.xlsx` に結果を出力します。
 
 *   **入出力ファイルを指定して実行:**
     ```powershell
-    uv run python process_excel.py --input 入力ファイル名.xlsx --output 出力ファイル名.xlsx
+    $env:PYTHONIOENCODING='utf-8'; uv run python process_excel.py --input 入力ファイル名.xlsx --output 出力ファイル名.xlsx
     ```
     依存関係 (`pyproject.toml`) を更新した場合は、再度 `uv sync` を実行して環境を同期してください。
     スクリプト実行時には、`rich` ライブラリによって整形された見やすいコンソール出力（設定情報、進行状況バー、各アイテムの検索結果、完了メッセージなど）が表示されます。
