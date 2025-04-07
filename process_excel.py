@@ -24,8 +24,6 @@ SLEEP_SECONDS = 1    # APIリクエスト間の待機時間（秒）
 MAX_URLS_TO_FETCH = 5 # 最初に取得する商品URLの最大数
 
 def process_row_data(row, row_index, total_rows):
-    """Excel行データから商品URLと価格のペアリストを取得し、各URLの詳細情報を抽出する"""
-def process_row_data(row, row_index, total_rows):
     """Excel行データから初期情報(URL,価格,画像URL)を取得し、各URLの詳細情報を抽出する""" # docstring更新
     initial_keywords = f"{row['ブランド']} {row['型番']} {row['文字盤色']} {row['ブレス形状']} 中古"
     console.print(f"[dim]({row_index+1}/{total_rows})[/dim] 処理開始: [cyan]{initial_keywords}[/cyan]")
