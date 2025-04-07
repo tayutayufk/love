@@ -34,29 +34,33 @@ def search_web(query):
     ) # ★閉じ括弧を追加
     return response.choices[0].message.content
 
-def extract_url_price_pairs(text, max_results=5):
-    """LLM(gpt-4o-mini)を使用して検索結果テキストから商品URLと価格のペアリストを抽出する関数"""
-    url_price_pair_schema = {
+def extract_initial_info(text, max_results=5): # 関数名変更
+    """LLM(gpt-4o-mini)を使用して検索結果テキストから商品URL, 価格, 画像URLのタプルリストを抽出する関数"""
+    initial_info_schema = { # スキーマ名変更
         "type": "object",
         "properties": {
             "url": {"type": ["string", "null"], "description": "`https://item.rakuten.co.jp/` から始まる商品ページのURL"},
-            "price": {"type": ["integer", "null"], "description": "価格（日本円、整数）。見つからない場合はnull。"}
+            "price": {"type": ["integer", "null"], "description": "価格（日本円、整数）。見つからない場合はnull。"},
+            "image_url": {"type": ["string", "null"], "description": "商品のメイン画像のURL (.png または .jpg)。見つからない場合はnull。"} # image_url追加
         },
-        "required": ["url", "price"]
+        "required": ["url", "price", "image_url"] # image_url追加
     }
-    url_price_list_schema = {
+    initial_info_list_schema = { # スキーマ名変更
         "type": "object",
         "properties": {
             "items": {
                 "type": "array",
-                "description": f"抽出された商品URLと価格のペアリスト。最大{max_results}件。",
-                "items": url_price_pair_schema
+                "description": f"抽出された商品URL, 価格, 画像URLのタプルリスト。最大{max_results}件。",
+                "items": initial_info_schema # 参照先変更
             }
         },
         "required": ["items"]
     }
-    prompt = f"""以下の**検索結果ページ**のテキストから、個々の商品情報（URLと価格）を抽出し、指定されたJSONスキーマに従ってリストで返してください。
-URLは `https://item.rakuten.co.jp/` で始まるもののみを対象とし、価格は日本円の整数値、見つからなければ `null` としてください。最大{max_results}件まで抽出してください。
+    prompt = f"""以下の**検索結果ページ**のテキストから、個々の商品情報（URL, 価格, 画像URL）を抽出し、指定されたJSONスキーマに従ってリストで返してください。
+URLは `https://item.rakuten.co.jp/` で始まるもののみを対象とします。
+価格は日本円の整数値、見つからなければ `null` としてください。
+画像URLは `.png` または `.jpg` で終わるメイン画像のURL、見つからなければ `null` としてください。
+最大{max_results}件まで抽出してください。
 
 テキスト：
 \"\"\"
@@ -68,7 +72,8 @@ URLは `https://item.rakuten.co.jp/` で始まるもののみを対象とし、�
             model="gpt-4o-mini",
             response_format={"type": "json_object"},
             messages=[
-                {"role": "system", "content": f"あなたはテキストから商品URLと価格のペアリストを抽出し、以下のJSONスキーマに従ってJSONオブジェクトで出力するアシスタントです。\nスキーマ:\n{json.dumps(url_price_list_schema, indent=2)}"},
+                # システムプロンプト修正
+                {"role": "system", "content": f"あなたはテキストから商品URL, 価格, 画像URLのタプルリストを抽出し、以下のJSONスキーマに従ってJSONオブジェクトで出力するアシスタントです。\nスキーマ:\n{json.dumps(initial_info_list_schema, indent=2)}"},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.0
@@ -84,18 +89,23 @@ URLは `https://item.rakuten.co.jp/` で始まるもののみを対象とし、�
                 # 価格が数値でなければnullにする
                 if not isinstance(item.get("price"), int):
                     item["price"] = None
+                # 画像URLが文字列でなければnullにし、拡張子を確認
+                image_url = item.get("image_url")
+                if not isinstance(image_url, str) or not (image_url.lower().endswith(".png") or image_url.lower().endswith(".jpg")):
+                    item["image_url"] = None
                 # URLからutmパラメータ削除
                 item["url"] = item["url"].split('?utm_source=openai')[0]
-                valid_items.append({"url": item["url"], "price": item["price"]}) # 必要なキーだけ保持
+                # 必要なキーだけ保持
+                valid_items.append({"url": item["url"], "price": item["price"], "image_url": item.get("image_url")})
 
         return valid_items[:max_results] # 最大数に制限して返す
 
     except json.JSONDecodeError as e:
-        print(f"  -> URL/価格ペア抽出エラー (JSONデコード失敗): {repr(e)}")
+        print(f"  -> 初期情報抽出エラー (JSONデコード失敗): {repr(e)}") # エラーメッセージ変更
         print(f"  -> 不正なJSON文字列: {result_json_str}")
         return []
     except Exception as e:
-        print(f"  -> URL/価格ペア抽出エラー (API呼び出し等): {repr(e)}")
+        print(f"  -> 初期情報抽出エラー (API呼び出し等): {repr(e)}") # エラーメッセージ変更
         return []
 
 def extract_single_watch_info_json(text): # 関数名を変更し、単一情報抽出に特化
@@ -105,9 +115,22 @@ def extract_single_watch_info_json(text): # 関数名を変更し、単一情報
         "type": "object", # トップレベルをオブジェクトに変更
         "properties": {
             "name": {"type": ["string", "null"], "description": "時計の名称やタイトル"},
-            "model_number": {"type": ["string", "null"], "description": "型番 (例: 126500LN)"}, # 追加
-            "dial_color": {"type": ["string", "null"], "description": "文字盤の色"}, # 追加
-            "bracelet_type": {"type": ["string", "null"], "description": "ブレスの形状 (例: オイスター, ジュビリー)"}, # 追加
+            "model_number": {"type": ["string", "null"], "description": "型番 (例: 126500LN)"},
+            "dial_color": {"type": ["string", "null"], "description": "文字盤の色"},
+            "bracelet_type": { # enum を使用して選択肢を固定
+                "type": ["string", "null"],
+                "description": "ブレスの形状。以下のいずれかに分類してください。",
+                "enum": [
+                    "オイスターブレスレット",
+                    "ジュビリーブレスレット",
+                    "プレジデントブレスレット",
+                    "オイスターフレックスブレスレット",
+                    "パールマスターブレスレット",
+                    "レザーブレスレット",
+                    "そのほか", # 上記以外の場合
+                    "不明"     # 判断できない場合
+                ]
+            },
             "price": {"type": ["integer", "null"], "description": "価格（日本円、整数）。見つからない場合はnull。10万円以上1億円未満。"},
             "url": {"type": ["string", "null"], "description": "商品ページのURL。見つからない場合はnull。末尾の'?utm_source=openai'は削除する。"},
             "seller": {"type": ["string", "null"], "description": "出品者名。見つからない場合はnull。"},
@@ -134,9 +157,9 @@ def extract_single_watch_info_json(text): # 関数名を変更し、単一情報
 - name: 時計の名称やタイトル
 - model_number: 型番 (例: 126500LN)
 - dial_color: 文字盤の色
-- bracelet_type: ブレスの形状 (例: オイスター, ジュビリー)
+- bracelet_type: ブレスの形状。必ず以下の選択肢のいずれかに分類してください: 「オイスターブレスレット」「ジュビリーブレスレット」「プレジデントブレスレット」「オイスターフレックスブレスレット」「パールマスターブレスレット」「レザーブレスレット」「そのほか」「不明」。
 - price: 価格（日本円、整数、10万円以上1億円未満、なければnull）
-- url: 商品ページURL ('?utm_source=openai'削除、なければnull)。**注意: `https://item.rakuten.co.jp/` から始まるURLのみを対象とします。**
+- url: 商品ページURL ('?utm_source=openai'削除、なければnull)。**注意: 必ず `https://item.rakuten.co.jp/` から始まるURLを抽出してください。`https://search.rakuten.co.jp/` 等の検索結果ページのURLは抽出せず、該当する商品ページURLが見つからない場合は `null` としてください。**
 - seller: 出品者名 (なければnull)
 - warranty_date: 保証書日付 (なければnull)
 - accessories: 付属品情報 (保証書の有無: has_warranty_card (boolean), 箱の有無: has_box (boolean), その他記述: other_description (string))
@@ -161,10 +184,10 @@ def extract_single_watch_info_json(text): # 関数名を変更し、単一情報
             temperature=0.0
         )
         result_json_str = response.choices[0].message.content
-        result_dict = json.loads(result_json_str) # 単一の辞書として受け取る
+        result_dict = json.loads(result_json_str)
 
         # --- バリデーションと整形 (単一の辞書に対して行う) ---
-        # URLから ?utm_source=openai を削除
+        # URLから ?utm_source=openai を削除し、ドメインをチェック
         if result_dict.get("url") and isinstance(result_dict["url"], str):
             result_dict["url"] = result_dict["url"].split('?utm_source=openai')[0]
             # URLがitem.rakuten.co.jpで始まらない場合はnullにする
@@ -175,6 +198,11 @@ def extract_single_watch_info_json(text): # 関数名を変更し、単一情報
         if result_dict.get("price") is not None:
             if not (isinstance(result_dict["price"], int) and 100000 <= result_dict["price"] < 100000000):
                 result_dict["price"] = None
+
+        # ブレスレットタイプのバリデーション (enumに含まれるか確認)
+        allowed_bracelet_types = single_watch_info_schema["properties"]["bracelet_type"]["enum"]
+        if result_dict.get("bracelet_type") not in allowed_bracelet_types:
+            result_dict["bracelet_type"] = "不明" # 不正な値なら「不明」にする
 
         # 付属品オブジェクトのバリデーションと補完
         accessories_info = result_dict.get("accessories", {})

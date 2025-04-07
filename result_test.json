@@ -1,135 +1,150 @@
 [
   {
     "input_keywords": "ROLEX 126500LN ブラック オイスター 中古",
-    "search_result_text_for_urls": "以下に、楽天市場で見つかったROLEX 126500LN ブラック オイスターの中古品5件の商品ページURLと価格をリストアップします。\n\n1. 商品ページ: [https://item.rakuten.co.jp/rolex-satindoll/126500ln-bk/](https://item.rakuten.co.jp/rolex-satindoll/126500ln-bk/)\n   価格: 4,590,000円\n\n2. 商品ページ: [https://item.rakuten.co.jp/rolex-satindoll/126500ln-wh/](https://item.rakuten.co.jp/rolex-satindoll/126500ln-wh/)\n   価格: 5,283,600円\n\n3. 商品ページ: [https://item.rakuten.co.jp/montagne/126500ln-bk/](https://item.rakuten.co.jp/montagne/126500ln-bk/)\n   価格: 4,781,000円\n\n4. 商品ページ: [https://item.rakuten.co.jp/rasin/126500ln-bk-random/](https://item.rakuten.co.jp/rasin/126500ln-bk-random/)\n   価格: 4,717,000円\n\n5. 商品ページ: [https://item.rakuten.co.jp/rasin/126500ln-bk-random2/](https://item.rakuten.co.jp/rasin/126500ln-bk-random2/)\n   価格: 4,707,000円\n\nこれらの商品は、楽天市場の以下の検索結果ページで確認できます: [https://search.rakuten.co.jp/search/mall/ROLEX%20126500LN%20%E3%83%96%E3%83%A9%E3%83%83%E3%82%AF%20%E3%82%AA%E3%82%A4%E3%82%B9%E3%82%BF%E3%83%BC%20%E4%B8%AD%E5%8F%A4/](https://search.rakuten.co.jp/search/mall/ROLEX%20126500LN%20%E3%83%96%E3%83%A9%E3%83%83%E3%82%AF%20%E3%82%AA%E3%82%A4%E3%82%B9%E3%82%BF%E3%83%BC%20%E4%B8%AD%E5%8F%A4/) ",
-    "extracted_url_price_pairs": [
+    "search_result_text_for_initial_info": "以下に、楽天市場で見つかったROLEX 126500LN ブラック オイスターの中古品5件をリストアップします。\n\n1. **商品ページURL**: [https://item.rakuten.co.jp/ippuukishi/ik-00-0647197/](https://item.rakuten.co.jp/ippuukishi/ik-00-0647197/)\n   - **価格**: 4,428,000円\n   - **メイン画像URL**: [https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647197_1.jpg](https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647197_1.jpg)\n\n2. **商品ページURL**: [https://item.rakuten.co.jp/ippuukishi/ik-00-0647198/](https://item.rakuten.co.jp/ippuukishi/ik-00-0647198/)\n   - **価格**: 4,428,000円\n   - **メイン画像URL**: [https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647198_1.jpg](https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647198_1.jpg)\n\n3. **商品ページURL**: [https://item.rakuten.co.jp/ippuukishi/ik-00-0647199/](https://item.rakuten.co.jp/ippuukishi/ik-00-0647199/)\n   - **価格**: 4,428,000円\n   - **メイン画像URL**: [https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647199_1.jpg](https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647199_1.jpg)\n\n4. **商品ページURL**: [https://item.rakuten.co.jp/ippuukishi/ik-00-0647200/](https://item.rakuten.co.jp/ippuukishi/ik-00-0647200/)\n   - **価格**: 4,428,000円\n   - **メイン画像URL**: [https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647200_1.jpg](https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647200_1.jpg)\n\n5. **商品ページURL**: [https://item.rakuten.co.jp/ippuukishi/ik-00-0647201/](https://item.rakuten.co.jp/ippuukishi/ik-00-0647201/)\n   - **価格**: 4,428,000円\n   - **メイン画像URL**: [https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647201_1.jpg](https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647201_1.jpg)\n\nこれらの商品は、すべてウォッチニアン ブランド品専門店から提供されています。価格や在庫状況は変動する可能性がありますので、購入前に各商品ページで最新の情報をご確認ください。 ",
+    "extracted_initial_info": [
       {
-        "url": "https://item.rakuten.co.jp/rolex-satindoll/126500ln-bk/",
-        "price": 4590000
+        "url": "https://item.rakuten.co.jp/ippuukishi/ik-00-0647197/",
+        "price": 4428000,
+        "image_url": "https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647197_1.jpg"
       },
       {
-        "url": "https://item.rakuten.co.jp/rolex-satindoll/126500ln-wh/",
-        "price": 5283600
+        "url": "https://item.rakuten.co.jp/ippuukishi/ik-00-0647198/",
+        "price": 4428000,
+        "image_url": "https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647198_1.jpg"
       },
       {
-        "url": "https://item.rakuten.co.jp/montagne/126500ln-bk/",
-        "price": 4781000
+        "url": "https://item.rakuten.co.jp/ippuukishi/ik-00-0647199/",
+        "price": 4428000,
+        "image_url": "https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647199_1.jpg"
       },
       {
-        "url": "https://item.rakuten.co.jp/rasin/126500ln-bk-random/",
-        "price": 4717000
+        "url": "https://item.rakuten.co.jp/ippuukishi/ik-00-0647200/",
+        "price": 4428000,
+        "image_url": "https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647200_1.jpg"
       },
       {
-        "url": "https://item.rakuten.co.jp/rasin/126500ln-bk-random2/",
-        "price": 4707000
+        "url": "https://item.rakuten.co.jp/ippuukishi/ik-00-0647201/",
+        "price": 4428000,
+        "image_url": "https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647201_1.jpg"
       }
     ],
     "extracted_results": [
       {
-        "name": "ロレックス デイトナ",
-        "model_number": "126500LN",
-        "dial_color": "ブラック",
-        "bracelet_type": "オイスターブレスレット（ステンレススチール製）",
-        "price": 4590000,
-        "url": "https://item.rakuten.co.jp/rolex-satindoll/126500ln-bk/",
-        "seller": "GINZA RASIN（銀座ラシン）",
-        "warranty_date": "2024年8月",
-        "accessories": {
-          "has_warranty_card": true,
-          "has_box": true,
-          "other_description": "外箱、内箱、取扱説明書"
-        },
-        "condition": "新品"
-      },
-      {
-        "name": "ロレックス デイトナ",
-        "model_number": "126500LN",
-        "dial_color": "ホワイト",
-        "bracelet_type": "オイスターブレスレット",
-        "price": 5283600,
-        "url": "https://item.rakuten.co.jp/rolex-satindoll/126500ln-wh/",
+        "name": null,
+        "model_number": null,
+        "dial_color": null,
+        "bracelet_type": "不明",
+        "price": 4428000,
+        "url": "https://item.rakuten.co.jp/ippuukishi/ik-00-0647197/",
         "seller": null,
         "warranty_date": null,
         "accessories": {
-          "has_warranty_card": true,
-          "has_box": true,
-          "other_description": "内箱、取扱説明書"
+          "has_warranty_card": null,
+          "has_box": null,
+          "other_description": null
         },
-        "condition": "新品"
+        "condition": null,
+        "image_url": "https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647197_1.jpg"
       },
       {
-        "name": "ロレックス（ROLEX）デイトナ 126500LN ブラック文字盤",
-        "model_number": "126500LN",
-        "dial_color": "ブラック",
-        "bracelet_type": "オイスターブレスレット（ステンレス製）",
-        "price": 4781000,
-        "url": "https://item.rakuten.co.jp/montagne/126500ln-bk/",
-        "seller": "グリント",
-        "warranty_date": "2023年12月（ランダムシリアル）",
-        "accessories": {
-          "has_warranty_card": true,
-          "has_box": true,
-          "other_description": "取扱説明書, タグ, 白タグ"
-        },
-        "condition": "新品"
-      },
-      {
-        "name": "ロレックス デイトナ",
-        "model_number": "126500LN",
-        "dial_color": "ブラック",
-        "bracelet_type": "オイスターブレスレット",
-        "price": 4717000,
-        "url": "https://item.rakuten.co.jp/rasin/126500ln-bk-random/",
-        "seller": "GINZA RASIN",
-        "warranty_date": "2024年6月",
-        "accessories": {
-          "has_warranty_card": true,
-          "has_box": true,
-          "other_description": "取扱説明書"
-        },
-        "condition": "未使用"
-      },
-      {
-        "name": "ロレックス コスモグラフ デイトナ",
-        "model_number": "126500LN",
-        "dial_color": "ブラック",
-        "bracelet_type": "オイスターブレスレット",
-        "price": 4707000,
-        "url": "https://item.rakuten.co.jp/rasin/126500ln-bk-random2/",
-        "seller": "株式会社ラシン（Rasin Co., Ltd.）",
+        "name": null,
+        "model_number": null,
+        "dial_color": null,
+        "bracelet_type": "不明",
+        "price": 4428000,
+        "url": "https://item.rakuten.co.jp/ippuukishi/ik-00-0647198/",
+        "seller": "ウォッチニアン ブランド品専門店",
         "warranty_date": null,
         "accessories": {
-          "has_warranty_card": true,
-          "has_box": true,
-          "other_description": "説明書、タグ"
+          "has_warranty_card": null,
+          "has_box": null,
+          "other_description": null
         },
-        "condition": "新品"
+        "condition": "新品",
+        "image_url": "https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647198_1.jpg"
+      },
+      {
+        "name": null,
+        "model_number": "ik-00-0647199",
+        "dial_color": null,
+        "bracelet_type": "不明",
+        "price": 4428000,
+        "url": "https://item.rakuten.co.jp/ippuukishi/ik-00-0647199/",
+        "seller": "池田ショップ楽天市場店",
+        "warranty_date": null,
+        "accessories": {
+          "has_warranty_card": null,
+          "has_box": null,
+          "other_description": null
+        },
+        "condition": null,
+        "image_url": "https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647199_1.jpg"
+      },
+      {
+        "name": null,
+        "model_number": null,
+        "dial_color": null,
+        "bracelet_type": "不明",
+        "price": 4428000,
+        "url": "https://item.rakuten.co.jp/ippuukishi/ik-00-0647200/",
+        "seller": "シモジマ",
+        "warranty_date": null,
+        "accessories": {
+          "has_warranty_card": null,
+          "has_box": null,
+          "other_description": null
+        },
+        "condition": "新品",
+        "image_url": "https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647200_1.jpg"
+      },
+      {
+        "name": null,
+        "model_number": null,
+        "dial_color": null,
+        "bracelet_type": "不明",
+        "price": 4428000,
+        "url": "https://item.rakuten.co.jp/ippuukishi/ik-00-0647201/",
+        "seller": "一風騎士",
+        "warranty_date": null,
+        "accessories": {
+          "has_warranty_card": null,
+          "has_box": null,
+          "other_description": null
+        },
+        "condition": null,
+        "image_url": "https://image.rakuten.co.jp/ippuukishi/cabinet/0647000/0647201_1.jpg"
       }
     ]
   },
   {
     "input_keywords": "ROLEX 126500LN ホワイト オイスター 中古",
-    "search_result_text_for_urls": "以下に、楽天市場で見つかったROLEX 126500LN ホワイト オイスターの中古商品ページとその価格を5件リストアップいたします。\n\n1. **ロレックス（ROLEX）デイトナ 126500LN ホワイト文字盤 〔2024年11月/ランダムシリアル〕〔メンズ〕〔腕時計〕〖中古〗**\n   - URL: https://item.rakuten.co.jp/san-kyu-shop/101772528/\n   - 価格: 5,180,000円\n\n2. **〖返品可〗新ギャラ付き ロレックス ROLEX デイトナ 126500LN ランダム番 ホワイト SS オイスターブレス 腕時計 メンズ 自動巻 [送料無料] 〖中古〗 101772528**\n   - URL: https://item.rakuten.co.jp/san-kyu-shop/101772528/\n   - 価格: 5,170,000円\n\n3. **ロレックス（ROLEX）デイトナ 126500LN ホワイト文字盤 〔2024年11月/ランダムシリアル〕〔メンズ〕〔腕時計〕〖中古〗**\n   - URL: https://item.rakuten.co.jp/san-kyu-shop/101772528/\n   - 価格: 5,180,000円\n\n4. **ロレックス（ROLEX）デイトナ 126500LN ホワイト文字盤 〔2024年11月/ランダムシリアル〕〔メンズ〕〔腕時計〕〖中古〗**\n   - URL: https://item.rakuten.co.jp/san-kyu-shop/101772528/\n   - 価格: 5,180,000円\n\n5. **ロレックス（ROLEX）デイトナ 126500LN ホワイト文字盤 〔2024年11月/ランダムシリアル〕〔メンズ〕〔腕時計〕〖中古〗**\n   - URL: https://item.rakuten.co.jp/san-kyu-shop/101772528/\n   - 価格: 5,180,000円\n\nなお、商品の在庫状況や価格は変動する可能性がありますので、最新の情報は各商品ページでご確認ください。 ",
-    "extracted_url_price_pairs": [
+    "search_result_text_for_initial_info": "以下に、指定された条件に合致する商品ページのURL、価格、メイン画像のURLを5件リストアップいたします。\n\n1. **商品ページURL**: [https://item.rakuten.co.jp/zetton/used-14108/](https://item.rakuten.co.jp/zetton/used-14108/)\n   - **価格**: 価格情報は記載されていません。\n   - **メイン画像URL**: 画像URLは取得できませんでした。\n\n2. **商品ページURL**: [https://item.rakuten.co.jp/san-kyu/101772528/](https://item.rakuten.co.jp/san-kyu/101772528/)\n   - **価格**: 5,170,000円\n   - **メイン画像URL**: 画像URLは取得できませんでした。\n\n3. **商品ページURL**: [https://item.rakuten.co.jp/watchnian/126500ln-white/](https://item.rakuten.co.jp/watchnian/126500ln-white/)\n   - **価格**: 5,248,000円\n   - **メイン画像URL**: 画像URLは取得できませんでした。\n\n4. **商品ページURL**: [https://item.rakuten.co.jp/brandshop-reine/126500ln-white/](https://item.rakuten.co.jp/brandshop-reine/126500ln-white/)\n   - **価格**: 5,300,000円\n   - **メイン画像URL**: 画像URLは取得できませんでした。\n\n5. **商品ページURL**: [https://item.rakuten.co.jp/brandshop-purely/126500ln-white/](https://item.rakuten.co.jp/brandshop-purely/126500ln-white/)\n   - **価格**: 5,350,000円\n   - **メイン画像URL**: 画像URLは取得できませんでした。\n\n※メイン画像のURLは取得できませんでした。詳細は各商品ページをご確認ください。 ",
+    "extracted_initial_info": [
       {
-        "url": "https://item.rakuten.co.jp/san-kyu-shop/101772528/",
-        "price": 5180000
+        "url": "https://item.rakuten.co.jp/zetton/used-14108/",
+        "price": null,
+        "image_url": null
       },
       {
-        "url": "https://item.rakuten.co.jp/san-kyu-shop/101772528/",
-        "price": 5170000
+        "url": "https://item.rakuten.co.jp/san-kyu/101772528/",
+        "price": 5170000,
+        "image_url": null
       },
       {
-        "url": "https://item.rakuten.co.jp/san-kyu-shop/101772528/",
-        "price": 5180000
+        "url": "https://item.rakuten.co.jp/watchnian/126500ln-white/",
+        "price": 5248000,
+        "image_url": null
       },
       {
-        "url": "https://item.rakuten.co.jp/san-kyu-shop/101772528/",
-        "price": 5180000
+        "url": "https://item.rakuten.co.jp/brandshop-reine/126500ln-white/",
+        "price": 5300000,
+        "image_url": null
       },
       {
-        "url": "https://item.rakuten.co.jp/san-kyu-shop/101772528/",
-        "price": 5180000
+        "url": "https://item.rakuten.co.jp/brandshop-purely/126500ln-white/",
+        "price": 5350000,
+        "image_url": null
       }
     ],
     "extracted_results": [
@@ -137,81 +152,86 @@
         "name": null,
         "model_number": null,
         "dial_color": null,
-        "bracelet_type": null,
-        "price": 5180000,
-        "url": "https://item.rakuten.co.jp/san-kyu-shop/101772528/",
-        "seller": "san-kyu-shop",
+        "bracelet_type": "不明",
+        "price": null,
+        "url": "https://item.rakuten.co.jp/zetton/used-14108/",
+        "seller": "ZETTON",
         "warranty_date": null,
         "accessories": {
           "has_warranty_card": null,
           "has_box": null,
           "other_description": null
         },
-        "condition": null
+        "condition": null,
+        "image_url": null
       },
       {
         "name": null,
         "model_number": null,
         "dial_color": null,
-        "bracelet_type": null,
+        "bracelet_type": "不明",
         "price": 5170000,
-        "url": "https://item.rakuten.co.jp/san-kyu-shop/101772528/",
-        "seller": "くらし応援ショップ サンキュー",
+        "url": "https://item.rakuten.co.jp/san-kyu/101772528/",
+        "seller": "三京商会",
         "warranty_date": null,
         "accessories": {
           "has_warranty_card": null,
           "has_box": null,
           "other_description": null
         },
-        "condition": null
+        "condition": null,
+        "image_url": null
       },
       {
-        "name": null,
-        "model_number": null,
-        "dial_color": null,
-        "bracelet_type": null,
-        "price": 5180000,
-        "url": "https://item.rakuten.co.jp/san-kyu-shop/101772528/",
-        "seller": "サンキューショップ",
-        "warranty_date": null,
+        "name": "ロレックス（ROLEX）デイトナ 126500LN ホワイト文字盤",
+        "model_number": "126500LN",
+        "dial_color": "ホワイト",
+        "bracelet_type": "オイスターブレスレット",
+        "price": 5248000,
+        "url": "https://item.rakuten.co.jp/watchnian/126500ln-white/",
+        "seller": "グリント",
+        "warranty_date": "2024年10月",
         "accessories": {
-          "has_warranty_card": null,
-          "has_box": null,
-          "other_description": null
+          "has_warranty_card": true,
+          "has_box": true,
+          "other_description": "取扱説明書、タグ"
         },
-        "condition": null
+        "condition": "新品",
+        "image_url": null
       },
       {
-        "name": null,
-        "model_number": null,
-        "dial_color": null,
-        "bracelet_type": null,
-        "price": 5180000,
-        "url": "https://item.rakuten.co.jp/san-kyu-shop/101772528/",
-        "seller": "san-kyu-shop",
+        "name": "ロレックス コスモグラフ デイトナ",
+        "model_number": "126500LN",
+        "dial_color": "ホワイト",
+        "bracelet_type": "オイスターブレスレット",
+        "price": 5300000,
+        "url": "https://item.rakuten.co.jp/brandshop-reine/126500ln-white/",
+        "seller": null,
         "warranty_date": null,
         "accessories": {
-          "has_warranty_card": null,
-          "has_box": null,
-          "other_description": null
+          "has_warranty_card": true,
+          "has_box": true,
+          "other_description": "専用ケース、取扱説明書、タグ、白タグ"
         },
-        "condition": null
+        "condition": "新品",
+        "image_url": null
       },
       {
-        "name": null,
-        "model_number": null,
-        "dial_color": null,
-        "bracelet_type": null,
-        "price": 5180000,
-        "url": "https://item.rakuten.co.jp/san-kyu-shop/101772528/",
-        "seller": "san-kyu-shop",
-        "warranty_date": null,
+        "name": "ロレックス コスモグラフ デイトナ",
+        "model_number": "126500LN",
+        "dial_color": "ホワイト",
+        "bracelet_type": "オイスターブレスレット",
+        "price": 5350000,
+        "url": "https://item.rakuten.co.jp/brandshop-purely/126500ln-white/",
+        "seller": "ブランドショップピュアリー",
+        "warranty_date": "2024年2月",
         "accessories": {
-          "has_warranty_card": null,
-          "has_box": null,
-          "other_description": null
+          "has_warranty_card": true,
+          "has_box": true,
+          "other_description": "外箱、内箱、取扱説明書、グリーンタグ"
         },
-        "condition": null
+        "condition": "新品",
+        "image_url": null
       }
     ]
   }
