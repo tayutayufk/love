@@ -16,9 +16,12 @@ from watch_info_extractor import WatchInfoExtractor
 console = Console()
 
 # --- 設定 ---
-DEFAULT_INPUT_EXCEL = '../data/target.xlsx'
-DEFAULT_OUTPUT_JSON = '../data/result.json'
-TEST_OUTPUT_JSON = '../data/result_test.json'
+# pathlibを使用してパスを定義
+BASE_DIR = Path(__file__).parent.parent  # プロジェクトのルートディレクトリ
+DATA_DIR = BASE_DIR / 'data'  # データディレクトリ
+DEFAULT_INPUT_EXCEL = DATA_DIR / 'target.xlsx'
+DEFAULT_OUTPUT_JSON = DATA_DIR / 'result.json'
+TEST_OUTPUT_JSON = DATA_DIR / 'result_test.json'
 DEFAULT_LIMIT = None # Noneの場合は全件処理
 TEST_LIMIT = 2       # テストモード時の処理行数
 SLEEP_SECONDS = 1    # APIリクエスト間の待機時間（秒）
@@ -108,15 +111,16 @@ def main():
     # コマンドライン引数の設定
     parser = argparse.ArgumentParser(description='Excelの時計情報からTavily APIとOpenAI APIを使って検索・抽出し、結果をJSONファイルに出力するスクリプト')
     parser.add_argument('--test', action='store_true', help='最初の2件のみ処理するテストモード')
-    parser.add_argument('--input', default=DEFAULT_INPUT_EXCEL, help=f'入力Excelファイル名 (デフォルト: {DEFAULT_INPUT_EXCEL})')
+    parser.add_argument('--input', default=str(DEFAULT_INPUT_EXCEL), help=f'入力Excelファイル名 (デフォルト: {DEFAULT_INPUT_EXCEL})')
     parser.add_argument('--output', default=None, help='出力JSONファイル名 (デフォルト: testモード時はresult_test.json, 通常時はresult.json)')
     args = parser.parse_args()
 
     # 入力/出力ファイルパスと処理行数制限の設定
-    input_excel_path = args.input
+    input_excel_path = Path(args.input)
     limit = TEST_LIMIT if args.test else DEFAULT_LIMIT
+    
     if args.output:
-        output_json_path = args.output
+        output_json_path = Path(args.output)
     else:
         output_json_path = TEST_OUTPUT_JSON if args.test else DEFAULT_OUTPUT_JSON
 
