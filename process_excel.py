@@ -4,95 +4,140 @@ import argparse
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
-from rich.table import Table
+# from rich.table import Table # Tableは使わなくなったので削除
 import json # JSONを扱うためにインポート
-from rich.text import Text
+# from rich.text import Text # Textは使わなくなったので削除
 
 # utils.py から関数をインポート
-# from utils import search_web, extract_prices, extract_details # 古い関数を削除
-# from utils import search_web, extract_watch_info_json # 古い関数を削除
-from utils import search_web, extract_multiple_watch_info_json # 新しい関数をインポート
+from utils import search_web, generate_rakuten_search_url, extract_url_price_pairs, extract_single_watch_info_json # インポートする関数名を修正
 
 # richコンソール初期化
 console = Console()
 
 # --- 設定 ---
 DEFAULT_INPUT_EXCEL = 'target.xlsx'
-# DEFAULT_OUTPUT_EXCEL = 'result.xlsx' # JSON出力に変更
-# TEST_OUTPUT_EXCEL = 'result_test.xlsx' # JSON出力に変更
 DEFAULT_OUTPUT_JSON = 'result.json'
 TEST_OUTPUT_JSON = 'result_test.json'
 DEFAULT_LIMIT = None # Noneの場合は全件処理
-TEST_LIMIT = 2       # テストモード時の処理行数 (5から2に変更)
+TEST_LIMIT = 2       # テストモード時の処理行数
 SLEEP_SECONDS = 1    # APIリクエスト間の待機時間（秒）
+MAX_URLS_TO_FETCH = 5 # 最初に取得する商品URLの最大数
 
 def process_row_data(row, row_index, total_rows):
-    """Excelの行データからクエリを作成し、価格候補、詳細情報、検索結果テキストを取得する"""
-    # クエリを作成
-    query = f"楽天市場 {row['ブランド']} {row['型番']} {row['文字盤色']} {row['ブレス形状']} 中古品 \n"
-    query += f"楽天市場 URL :https://www.rakuten.co.jp/ \n"
-    query += "検索結果には、価格、商品ページのURL、出品者、保証書日付、付属品、状態を含めてください。\n"
-    console.print(f"[dim]({row_index+1}/{total_rows})[/dim] 検索中: [cyan]{query}[/cyan]")
-    # print(f"({row_index+1}/{total_rows}) 検索中: {query}")
+    """Excel行データから商品URLと価格のペアリストを取得し、各URLの詳細情報を抽出する"""
+    initial_keywords = f"{row['ブランド']} {row['型番']} {row['文字盤色']} {row['ブレス形状']} 中古"
+    console.print(f"[dim]({row_index+1}/{total_rows})[/dim] 処理開始: [cyan]{initial_keywords}[/cyan]")
 
-    search_result_text = None # 検索結果テキストを初期化
-    extracted_watches_list = [] # 抽出結果(辞書のリスト)を初期化
+    url_price_pairs = []
+    extracted_watches_details = [] # 個別商品情報のリスト
+    url_list_search_result_text = None # URLリスト取得時の検索結果テキスト
 
     try:
-        search_result = search_web(query)
-        search_result_text = search_result # 生テキストを保存
+        # 1. 検索URL生成 & 商品URL/価格ペア取得クエリ作成
+        search_url = generate_rakuten_search_url(initial_keywords)
+        # クエリを少し変更：URLだけでなく価格も明示的に要求
+        url_price_query = f"{search_url} から、商品ページのURL (`https://item.rakuten.co.jp/`で始まるもの) と価格を{MAX_URLS_TO_FETCH}件リストアップしてください。"
+        console.print(f"  -> URL/価格ペア取得クエリ実行中...")
 
-        # 複数の時計情報をJSONオブジェクトのリストとして抽出
-        extracted_watches_list = extract_multiple_watch_info_json(search_result)
-
-        if extracted_watches_list:
-            # 結果表示 (抽出された情報のリストを表示)
-            print(f"  抽出結果 ({len(extracted_watches_list)}件):")
-            for i, watch_info in enumerate(extracted_watches_list):
-                 print(f"    --- 商品 {i+1} ---")
-                 # 見やすいように主要情報だけ表示（例）
-                 print(f"      名前: {watch_info.get('name', 'N/A')}")
-                 price_val = watch_info.get('price')
-                 print(f"      価格: {f'¥{price_val:,}' if price_val else 'N/A'}")
-                 print(f"      URL: {watch_info.get('url', 'N/A')}")
-                 print(f"      出品者: {watch_info.get('seller', 'N/A')}")
-        else:
-            # 抽出失敗または結果なし
-            print("  -> 抽出結果なし または 抽出失敗")
-
-        # APIのレート制限を避けるために少し待機
-        time.sleep(SLEEP_SECONDS)
+        # 2. 商品URL/価格ペアリスト取得 (Web検索 + LLM抽出)
+        url_price_search_result = search_web(url_price_query)
+        url_list_search_result_text = url_price_search_result # テキスト保存
+        url_price_pairs = extract_url_price_pairs(url_price_search_result, max_results=MAX_URLS_TO_FETCH)
+        print(f"  -> 抽出されたURL/価格ペア ({len(url_price_pairs)}件):")
+        for pair in url_price_pairs:
+            price_str = f"¥{pair['price']:,}" if pair.get('price') else "N/A"
+            print(f"    - URL: {pair.get('url', 'N/A')}, 価格: {price_str}")
 
     except Exception as e:
-        print(f"  -> エラー発生: {repr(e)}") # Use standard print and repr(e)
-        extracted_watches_list = [] # エラー時は空リスト
+        print(f"  -> URL/価格ペア取得/抽出中にエラー発生: {repr(e)}")
+        url_price_pairs = [] # エラー時は空リスト
+
+    # 3. 個別商品情報取得ループ
+    console.print(f"  -> 個別商品ページ情報取得中 ({len(url_price_pairs)}件)...")
+    for i, item_pair in enumerate(url_price_pairs):
+        product_url = item_pair.get("url")
+        initial_price = item_pair.get("price") # 最初に取得した価格
+
+        if not product_url:
+            console.print(f"    ({i+1}/{len(url_price_pairs)}) URLが見つからないためスキップ")
+            continue
+
+        console.print(f"    ({i+1}/{len(url_price_pairs)}) URL: {product_url}")
+        try:
+            # 詳細情報取得クエリ作成 & 実行
+            detail_query = f"{product_url} の商品ページから詳細情報（名前, 型番, 文字盤色, ブレス形状, 出品者, 保証書日付, 付属品(保証書有無,箱有無,その他記述), 状態）を抽出してください。"
+            detail_search_result = search_web(detail_query)
+
+            # 詳細情報抽出
+            watch_detail = extract_single_watch_info_json(detail_search_result)
+
+            if watch_detail:
+                # URLが抽出できなかった場合、元のURLを補完
+                if not watch_detail.get("url"):
+                    watch_detail["url"] = product_url
+
+                # 価格を優先的にマージ: 最初に取得した価格があればそれを使う
+                if initial_price is not None:
+                    watch_detail["price"] = initial_price
+                # もし最初の価格がなく、詳細抽出で価格が得られたらそれを使う (既にバリデーション済みのはず)
+                # それ以外はnullのまま
+
+                extracted_watches_details.append(watch_detail)
+                # コンソールに主要情報表示 (任意)
+                price_str_final = f"¥{watch_detail.get('price'):,}" if watch_detail.get('price') else "N/A"
+                print(f"      -> 抽出成功: {watch_detail.get('name', 'N/A')} / {price_str_final}")
+            else:
+                print("      -> 詳細抽出失敗")
+                # 詳細抽出失敗時も、URLと最初の価格だけは記録しておく (任意)
+                extracted_watches_details.append({
+                    "name": None, "model_number": None, "dial_color": None, "bracelet_type": None,
+                    "price": initial_price, "url": product_url, "seller": None, "warranty_date": None,
+                    "accessories": {"has_warranty_card": None, "has_box": None, "other_description": "詳細抽出失敗"},
+                    "condition": None
+                })
+
+
+            # APIのレート制限を避けるために待機
+            time.sleep(SLEEP_SECONDS)
+
+        except Exception as e:
+            print(f"    -> URL {product_url} の処理中にエラー発生: {repr(e)}")
+            # エラー時も、URLと最初の価格だけは記録しておく (任意)
+            extracted_watches_details.append({
+                "name": None, "model_number": None, "dial_color": None, "bracelet_type": None,
+                "price": initial_price, "url": product_url, "seller": None, "warranty_date": None,
+                "accessories": {"has_warranty_card": None, "has_box": None, "other_description": f"処理中エラー: {repr(e)}"},
+                "condition": None
+            })
+
 
     # 結果を辞書で返す (main関数で処理するため)
     return {
-        "input_query": query,
-        "search_result_text": search_result_text,
-        "extracted_results": extracted_watches_list # 辞書のリスト
+        "input_keywords": initial_keywords,
+        "search_result_text_for_urls": url_list_search_result_text, # URL取得時のテキストも保存
+        "extracted_url_price_pairs": url_price_pairs, # URLと価格のペアリスト
+        "extracted_results": extracted_watches_details # 最終的な詳細情報リスト
     }
 
 def main():
     # コマンドライン引数の設定
-    parser = argparse.ArgumentParser(description='Excelの時計情報からWeb検索し、結果をJSONファイルに出力するスクリプト') # 説明変更
-    parser.add_argument('--test', action='store_true', help='最初の2件のみ処理するテストモード') # ヘルプ変更
+    parser = argparse.ArgumentParser(description='Excelの時計情報からWeb検索し、結果をJSONファイルに出力するスクリプト')
+    parser.add_argument('--test', action='store_true', help='最初の2件のみ処理するテストモード')
     parser.add_argument('--input', default=DEFAULT_INPUT_EXCEL, help=f'入力Excelファイル名 (デフォルト: {DEFAULT_INPUT_EXCEL})')
-    parser.add_argument('--output', default=None, help='出力JSONファイル名 (デフォルト: testモード時はresult_test.json, 通常時はresult.json)') # ヘルプ変更
+    parser.add_argument('--output', default=None, help='出力JSONファイル名 (デフォルト: testモード時はresult_test.json, 通常時はresult.json)')
     args = parser.parse_args()
 
     # 入力/出力ファイルパスと処理行数制限の設定
     input_excel_path = args.input
     limit = TEST_LIMIT if args.test else DEFAULT_LIMIT
     if args.output:
-        output_json_path = args.output # 変数名変更
+        output_json_path = args.output
     else:
-        output_json_path = TEST_OUTPUT_JSON if args.test else DEFAULT_OUTPUT_JSON # 変数名変更
+        output_json_path = TEST_OUTPUT_JSON if args.test else DEFAULT_OUTPUT_JSON
 
     console.print(Panel(f"[bold green]Rolex Search Tool 開始[/bold green]\n"
                         f"入力ファイル: [cyan]{input_excel_path}[/cyan]\n"
-                        f"出力ファイル: [cyan]{output_json_path}[/cyan]\n" # 変数名変更
+                        f"出力ファイル: [cyan]{output_json_path}[/cyan]\n"
                         f"テストモード: {'[bold yellow]有効[/bold yellow]' if args.test else '[dim]無効[/dim]'}",
                         title="設定", border_style="blue"))
 
@@ -111,7 +156,7 @@ def main():
             console.print(f"全 {len(df_process)} 行を処理します。")
 
         total_rows = len(df_process)
-        results_list = [] # 結果を格納するリスト
+        final_results_list = [] # 最終結果を格納するリスト
 
         # プログレスバーの設定
         with Progress(
@@ -127,28 +172,15 @@ def main():
 
             # 各行に関数を適用して結果を取得 (戻り値は辞書)
             for index, row in df_process.iterrows():
-                result_dict = process_row_data(row, index, total_rows) # 変数名変更
-                results_list.append(result_dict) # 辞書をリストに追加
+                result_data_for_row = process_row_data(row, index, total_rows) # 変数名変更
+                final_results_list.append(result_data_for_row) # 辞書をリストに追加
                 progress.update(task, advance=1) # プログレスバーを進める
-
-        # --- Excel関連処理を削除 ---
-        # # 結果をDataFrameに変換
-        # # new_columns = ['価格候補1', '価格候補2', '価格候補3', '出品者', '保証書日付', '付属品', '状態', '検索結果テキスト'] # 古い列名
-        # new_columns = ['抽出結果JSON', '検索結果テキスト'] # 新しい列名
-        # results_df = pd.DataFrame(results_list, columns=new_columns)
-        #
-        # # 元のDataFrameに結果を結合
-        # df_result = pd.concat([df_process.reset_index(drop=True), results_df.reset_index(drop=True)], axis=1)
-        #
-        # # 結果を新しいExcelファイルに保存
-        # console.print(f"\n書き込み中: [cyan]{output_excel_path}[/cyan]...")
-        # df_result.to_excel(output_excel_path, index=False)
 
         # 結果をJSONファイルに保存
         console.print(f"\n書き込み中: [cyan]{output_json_path}[/cyan]...")
         try:
             with open(output_json_path, 'w', encoding='utf-8') as f:
-                json.dump(results_list, f, ensure_ascii=False, indent=2)
+                json.dump(final_results_list, f, ensure_ascii=False, indent=2) # final_results_list を保存
             console.print(Panel(f"[bold green]✓ 処理完了[/bold green]\n結果を '{output_json_path}' に保存しました。",
                                 border_style="green"))
         except IOError as e:
