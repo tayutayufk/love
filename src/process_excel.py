@@ -25,21 +25,22 @@ TEST_OUTPUT_JSON = DATA_DIR / 'result_test.json'
 DEFAULT_LIMIT = None # Noneの場合は全件処理
 TEST_LIMIT = 2       # テストモード時の処理行数
 SLEEP_SECONDS = 1    # APIリクエスト間の待機時間（秒）
-MAX_URLS_TO_FETCH = 5 # 検索結果の最大取得数
+MAX_URLS_TO_FETCH = 10 # 検索結果の最大取得数
+ADVANCE_SEARCH =  True #検索深度を深める
 
-def process_row_data(row, row_index, total_rows, tavily_client, watch_extractor):
+def process_row_data(row, row_index, total_rows, tavily_client, watch_extractor, advance_search):
     """Excel行データから楽天の時計情報を検索し、詳細情報を抽出する"""
     initial_keywords = f"{row['ブランド']} {row['型番']} {row['文字盤色']} {row['ブレス形状']} 中古"
     console.print(f"[dim]({row_index+1}/{total_rows})[/dim] 処理開始: [cyan]{initial_keywords}[/cyan]")
 
-    search_query = f"楽天市場 {initial_keywords}"
+    search_query = f"{initial_keywords}"
     extracted_watches_details = []  # 最終的な抽出結果リスト
     search_results = []  # 検索結果リスト
 
     try:
         # Tavilyを使用して楽天の商品を検索
         console.print(f"  -> 商品検索クエリ実行中: {search_query}")
-        search_results = tavily_client.search_item(search_query, max_results=MAX_URLS_TO_FETCH)
+        search_results = tavily_client.search_item(search_query, max_results=MAX_URLS_TO_FETCH, advance_search=advance_search)
         console.print(f"  -> 検索結果 ({len(search_results)}件):")
         
         for i, item in enumerate(search_results):
@@ -169,21 +170,39 @@ def main():
             # 各行に関数を適用して結果を取得
             for index, row in df_process.iterrows():
                 # 行ごとの処理を実行
-                result_data_for_row = process_row_data(row, index, total_rows, tavily_client, watch_extractor)
+                result_data_for_row = process_row_data(row, index, total_rows, tavily_client, watch_extractor, ADVANCE_SEARCH)
                 
                 # 結果をリストに追加
                 final_results_list.append(result_data_for_row)
                 
-                # 出力ディレクトリの確認と作成
-                output_dir = Path(output_json_path).parent
-                output_dir.mkdir(parents=True, exist_ok=True)
-                
-                # 逐次保存（各行の処理後にJSONファイルを更新）
-                with open(output_json_path, 'w', encoding='utf-8') as f:
-                    json.dump(final_results_list, f, ensure_ascii=False, indent=2)
+                # デバッグ用に結果確認
+                console.print(f"[dim]行 {index+1} の結果: {len(result_data_for_row['extracted_results'])} 件の情報抽出[/dim]")
                 
                 # プログレスバーを進める
                 progress.update(task, advance=1)
+        
+        # 出力ディレクトリの確認と作成
+        output_dir = Path(output_json_path).parent
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # ループ外でまとめて保存
+        console.print(f"最終結果を保存中... ({len(final_results_list)} 行のデータ)")
+        
+        try:
+            with open(output_json_path, 'w', encoding='utf-8') as f:
+                json.dump(final_results_list, f, ensure_ascii=False, indent=2)
+                f.flush()  # 強制的にバッファをフラッシュ
+                os.fsync(f.fileno())  # OSレベルでの書き込み完了を保証
+                
+            # ファイル存在確認
+            if output_json_path.exists():
+                file_size = output_json_path.stat().st_size
+                console.print(f"保存完了: ファイルサイズ {file_size} バイト")
+            else:
+                console.print("[bold red]警告:[/bold red] ファイルが保存されていません。")
+        except Exception as e:
+            console.print(f"[bold red]JSONへの書き込みエラー:[/bold red] {str(e)}")
+            console.print_exception(show_locals=True)
 
         # 最終結果の保存完了メッセージ
         console.print(Panel(f"[bold green]✓ 処理完了[/bold green]\n結果を '{output_json_path}' に保存しました。",
