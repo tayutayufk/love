@@ -43,20 +43,33 @@ class tavily_processor:
                 filtered_results.append({"url": url, "content": content})
         return filtered_results
 
-    def extract_content(self, url: str, extract_depth: str = "advanced"):
+    def extract_content(self, url: str, extract_depth: str = "advanced", include_images: bool = False):
         """
-        Tavily Extract API を使って、指定されたURLから raw_content を抽出する処理
+        Tavily Extract API を使って、指定されたURLから content と画像URLを抽出する処理
         パラメータ:
-          url (str): 抽出対象のURL（リストに変換して渡す）
-          extract_depth (str): "advanced" または "basic"
+        url (str): 抽出対象のURL（リストに変換して渡す）
+        extract_depth (str): "advanced" または "basic"
+        include_images (bool): 画像URLを含めるかどうか。デフォルトはFalse
         戻り値:
-          str または None: 抽出された raw_content。結果がなければ None を返す。
+        dict または str または None: 
+            include_images=True の場合: {"raw_content": 抽出されたコンテンツ, "images": 画像URLのリスト}
+            include_images=False の場合: 抽出された raw_content のみ
+            結果がなければ None を返す。
         """
         response = self.client.extract(
             urls=[url],
-            extract_depth=extract_depth
+            extract_depth=extract_depth,
+            include_images=include_images
         )
         results = response.get("results", [])
-        if results:
-            return results[0].get("raw_content")
-        return None
+        if not results:
+            return None
+            
+        result = results[0]
+        raw_content = result.get("raw_content")
+        
+        if include_images:
+            images = result.get("images", [])
+            return {"raw_content": raw_content, "images": images}
+        else:
+            return raw_content
