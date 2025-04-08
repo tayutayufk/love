@@ -2,15 +2,14 @@
 
 ## 概要
 
-このツールは、Excelファイル (`target.xlsx`) に記載された時計の情報（ブランド、型番、文字盤色、ブレス形状）をもとに、Web検索 (OpenAI API) を行い、中古市場での価格候補や詳細情報（出品者、保証書日付、付属品、状態など）を自動で収集し、結果を新しいExcelファイル (`result.xlsx` または `result_test.xlsx`) に出力します。
+このツールは、Excelファイル (`target.xlsx`) に記載された時計の情報（ブランド、型番、文字盤色、ブレス形状）をもとに、Web検索 (Tavily API) を行い、中古市場での価格候補や詳細情報（出品者、保証書日付、付属品、状態など）を自動で収集し、結果を新しいExcelファイル (`result.xlsx` または `result_test.xlsx`) に出力します。
 
 ## 機能
 
 *   指定されたExcelファイル (`target.xlsx` がデフォルト) を入力として読み込みます。
 *   各行の時計情報から検索クエリを自動生成します。
-*   OpenAI API (`gpt-4o-search-preview`) を利用してWeb検索を実行し、関連情報を取得します。
-*   検索結果のテキストから、正規表現を用いて価格候補（数値として妥当なものを最大3つ）を抽出します。
-*   検索結果のテキストから、詳細情報（出品者、保証書日付、付属品、状態）を抽出します（抽出精度は検索結果に依存します）。
+*   Tavily APIを利用してWeb検索を実行し、関連情報を取得します。
+*   検索結果のテキストから、OpenAI APIを用いて各種情報を取得します
 *   抽出した情報と元のデータを結合し、新しいExcelファイル (`result.xlsx` またはテストモード時は `result_test.xlsx`) に保存します。
 *   コマンドライン引数により、テストモード (`--test`) での実行（最初の5件のみ処理）や、入出力ファイル名の指定 (`--input`, `--output`) が可能です。
 
@@ -55,20 +54,20 @@
 
 *   **通常実行 (全件処理):**
     ```powershell
-    $env:PYTHONIOENCODING='utf-8'; uv run python process_excel.py
+    $env:PYTHONIOENCODING='utf-8'; uv run python ./src/process_excel.py
     ```
     `target.xlsx` を読み込み、全件を処理して `result.xlsx` に結果を出力します。
     (Windows環境で文字化けが発生する場合は、`$env:PYTHONIOENCODING='utf-8';` を先頭に追加してください。)
 
 *   **テスト実行 (最初の5件のみ):**
     ```powershell
-    $env:PYTHONIOENCODING='utf-8'; uv run python process_excel.py --test
+    $env:PYTHONIOENCODING='utf-8'; uv run python ./src/process_excel.py --test
     ```
     `target.xlsx` を読み込み、最初の5件のみ処理して `result_test.xlsx` に結果を出力します。
 
 *   **入出力ファイルを指定して実行:**
     ```powershell
-    $env:PYTHONIOENCODING='utf-8'; uv run python process_excel.py --input 入力ファイル名.xlsx --output 出力ファイル名.xlsx
+    $env:PYTHONIOENCODING='utf-8'; uv run python ./src/process_excel.py --input 入力ファイル名.xlsx --output 出力ファイル名.xlsx
     ```
     依存関係 (`pyproject.toml`) を更新した場合は、再度 `uv sync` を実行して環境を同期してください。
     スクリプト実行時には、`rich` ライブラリによって整形された見やすいコンソール出力（設定情報、進行状況バー、各アイテムの検索結果、完了メッセージなど）が表示されます。
@@ -77,9 +76,23 @@
 
 ```
 .
+├──　*data/                     # 入出力データを格納するディレクトリ
+|   ├── result.xlsx             # 通常実行時の出力結果ファイル (実行後に生成)
+|   ├── result_test.xlsx        # テスト実行時の出力結果ファイル (実行後に生成)
+|   └── target.xlsx             # 検索対象の時計情報を入力するExcelファイル (サンプル)
+|
+├── *src/                       #ベースラインを格納するディレクトリ
+|   ├── process_excell.py       # Excel処理を実行するメインスクリプト
+|   ├── tavily_processor.py     # Tavily APIを実行するスクリプト
+|   └── watch_info_extractor.py # テキストから時計情報を抽出するスクリプト              # 
+|
+├──　*test/
+|   ├── result/                 #テスト結果を格納するディレクトリ
+|   ├── tavily_processor.py     # Tavily APIを実行するスクリプト
+|   └── watch_info_extractor.py # テキストから時計情報を抽出するスクリプト
+|          
 ├── analyze_excel.py      # 結果ファイル (result_test.xlsx) を分析するサンプルスクリプト
 ├── main.py               # utils.py の関数をテストするためのサンプルスクリプト (実行には不要)
-├── process_excel.py      # Excel処理を実行するメインスクリプト
 ├── utils.py              # Web検索、価格抽出、詳細抽出などのコア関数群
 ├── pyproject.toml        # プロジェクト設定と依存関係 (uv用)
 ├── README.md             # このファイル
