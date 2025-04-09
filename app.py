@@ -33,8 +33,7 @@ except ImportError as e:
 
 
 # --- Gradio 用の処理関数 ---
-# def process_excel_gradio(input_file_obj, progress=gr.Progress(track_tqdm=True)): # Progressを一時的に削除
-def process_excel_gradio(input_file_obj):
+def process_excel_gradio(input_file_obj, progress=gr.Progress(track_tqdm=True)):  # Progressのコメント解除
     """Gradioインターフェース用のExcel処理関数"""
     if input_file_obj is None:
         return pd.DataFrame(), "エラー: 入力ファイルが指定されていません。"
@@ -58,13 +57,13 @@ def process_excel_gradio(input_file_obj):
         logging.info(f"Excelファイルの読み込み完了。処理対象: {total_rows}行")
         results_list = []
 
-        # progress(0, desc="処理開始...") # Progressを一時的に削除
+        progress(0, desc="処理開始...")  # Progressのコメント解除
 
         # 各行を処理
         for index, row in df.iterrows():
-            # # 進捗を更新 (Progressを一時的に削除)
-            # current_progress = (index + 1) / total_rows
-            # progress(current_progress, desc=f"処理中: {index + 1}/{total_rows}行目")
+            # 進捗を更新 (Progressのコメント解除)
+            current_progress = (index + 1) / total_rows
+            progress(current_progress, desc=f"検索クエリ処理中: {index + 1}/{total_rows}")  # 説明を修正
 
             # Excelからデータを安全に取得 (列が存在しない場合も考慮)
             brand = row.get("ブランド", "")
@@ -284,9 +283,8 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
     # # file_dropdown.change(fn=clear_upload_on_select, inputs=[file_dropdown], outputs=[file_upload]) # 一時的にコメントアウト
 
-    # 実行ボタンのクリックイベント (ファイルアップロードを除外, Progressを除外)
-    # def run_processing_wrapper(dropdown_choice, progress=gr.Progress(track_tqdm=True)):
-    def run_processing_wrapper(dropdown_choice):
+    # 実行ボタンのクリックイベント (ファイルアップロードを除外, Progressを有効化)
+    def run_processing_wrapper(dropdown_choice, progress=gr.Progress(track_tqdm=True)):  # Progressのコメント解除
         """実行ボタンクリック時の処理 (ドロップダウンのみ)"""
         target_file_obj = None
         source_description = ""
@@ -317,8 +315,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                     mock_file_obj = MockFile(tmp_file.name, dropdown_choice)
 
                     logging.info(f"処理を開始します。ソース: {source_description}")
-                    # result_df, status = process_excel_gradio(mock_file_obj, progress) # Progressを除外
-                    result_df, status = process_excel_gradio(mock_file_obj)  # DataFrameが返る
+                    result_df, status = process_excel_gradio(mock_file_obj, progress)  # Progressを渡すように修正
 
                     # 処理後、一時ファイルを削除
                     # process_excel_gradio内で削除しようとすると、Gradioがまだ掴んでいる可能性があるため、ここで削除
@@ -346,8 +343,8 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         fn=run_processing_wrapper,
         inputs=[file_dropdown],  # file_upload を削除
         outputs=[output_table, status_text],  # output_text を output_table に変更
-        # APIコールを無効化 (UIのテスト用)
-        # api_name="run_processing"
+        # Progressを有効化
+        # api_name="run_processing" # 必要に応じてAPI名を有効化
     )
 
 if __name__ == "__main__":
