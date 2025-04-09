@@ -138,39 +138,65 @@ def process_excel_gradio(input_file_obj):
         # --- 結果をDataFrameに整形 ---
         logging.info("処理結果をDataFrameに整形中...")
         output_data = []
+        # JSONの全キーを列名として定義（accessories内のキーも展開）
+        columns = [
+            "検索キーワード",
+            "商品名",
+            "型番",
+            "文字盤色",
+            "ブレス形状",
+            "価格",
+            "販売店",
+            "保証書日付",
+            "保証書あり",
+            "箱あり",
+            "付属品詳細",
+            "状態",
+            "URL",
+            "エラー",
+        ]
+
         for result in results_list:
             keywords = result["input_keywords"]
             row_err = result["row_error"]
 
             if row_err:  # 行レベルのエラーがあった場合
-                output_data.append(
-                    {
-                        "検索キーワード": keywords,
-                        "商品名": "エラー",
-                        "型番": "",
-                        "価格": "",
-                        "URL": "",
-                        "エラー": row_err,
-                    }
-                )
+                error_row = {col: "" for col in columns}  # 全ての列を空にする
+                error_row["検索キーワード"] = keywords
+                error_row["エラー"] = row_err
+                output_data.append(error_row)
+
             elif not result["extracted_results"]:  # 検索結果が0件の場合
-                output_data.append(
-                    {"検索キーワード": keywords, "商品名": "該当なし", "型番": "", "価格": "", "URL": "", "エラー": ""}
-                )
+                no_result_row = {col: "" for col in columns}  # 全ての列を空にする
+                no_result_row["検索キーワード"] = keywords
+                no_result_row["商品名"] = "該当なし"
+                output_data.append(no_result_row)
+
             else:  # 検索結果がある場合
                 for detail in result["extracted_results"]:
-                    output_data.append(
-                        {
-                            "検索キーワード": keywords,
-                            "商品名": detail.get("name", "N/A"),
-                            "型番": detail.get("model_number", "N/A"),
-                            "価格": f"¥{detail.get('price'):,}" if detail.get("price") is not None else "N/A",
-                            "URL": detail.get("url", "N/A"),
-                            "エラー": detail.get("error", ""),  # 抽出エラーなど
-                        }
-                    )
+                    accessories = detail.get("accessories", {})  # Noneの場合も考慮
+                    if accessories is None:  # accessoriesがNoneの場合のフォールバック
+                        accessories = {}
+                    output_row = {
+                        "検索キーワード": keywords,
+                        "商品名": detail.get("name", "N/A"),
+                        "型番": detail.get("model_number", "N/A"),
+                        "文字盤色": detail.get("dial_color", "N/A"),
+                        "ブレス形状": detail.get("bracelet_type", "N/A"),
+                        "価格": f"¥{detail.get('price'):,}" if detail.get("price") is not None else "N/A",
+                        "販売店": detail.get("seller", "N/A"),
+                        "保証書日付": detail.get("warranty_date", "N/A"),
+                        "保証書あり": accessories.get("has_warranty_card", False),  # デフォルトFalse
+                        "箱あり": accessories.get("has_box", False),  # デフォルトFalse
+                        "付属品詳細": accessories.get("other_description", ""),  # デフォルト空文字
+                        "状態": detail.get("condition", "N/A"),
+                        "URL": detail.get("url", "N/A"),
+                        "エラー": detail.get("error", ""),  # 抽出エラーなど
+                    }
+                    output_data.append(output_row)
 
-        output_df = pd.DataFrame(output_data)
+        # 定義した列順序でDataFrameを作成
+        output_df = pd.DataFrame(output_data, columns=columns)
         logging.info("DataFrameの整形完了。")
         return output_df, "処理が完了しました。"
 
@@ -236,8 +262,8 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
         with gr.Column(scale=3):
             gr.Markdown("### 処理結果")
-            # output_table = gr.DataFrame(label="抽出結果") # 一時的にTextboxに変更
-            output_text = gr.Textbox(label="抽出結果 (テキスト)", lines=15, interactive=False)
+            output_table = gr.DataFrame(label="抽出結果")  # TextboxからDataFrameに戻す
+            # output_text = gr.Textbox(label="抽出結果 (テキスト)", lines=15, interactive=False) # DataFrameを使うので削除
 
     # --- イベントハンドラ ---
     # ファイルがアップロードされたら、ドロップダウンの選択を解除
@@ -292,7 +318,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
                     logging.info(f"処理を開始します。ソース: {source_description}")
                     # result_df, status = process_excel_gradio(mock_file_obj, progress) # Progressを除外
-                    result_df, status = process_excel_gradio(mock_file_obj)
+                    result_df, status = process_excel_gradio(mock_file_obj)  # DataFrameが返る
 
                     # 処理後、一時ファイルを削除
                     # process_excel_gradio内で削除しようとすると、Gradioがまだ掴んでいる可能性があるため、ここで削除
@@ -302,23 +328,24 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                     except OSError as e:
                         logging.warning(f"一時ファイル {tmp_file.name} の削除に失敗しました: {e}")
 
-                    # Textbox用にDataFrameを文字列に変換 (またはステータスのみ返す)
-                    result_str = result_df.to_string() if not result_df.empty else "結果なし"
-                    return result_str, status
+                    # DataFrameをそのまま返す
+                    return result_df, status
 
             except Exception as e:
                 logging.exception(f"ドロップダウンファイルの処理中にエラーが発生しました: {dropdown_choice}")
                 error_msg = f"エラー: ファイル '{dropdown_choice}' の処理中に問題が発生しました。詳細: {repr(e)}"
-                return error_msg, error_msg  # Textboxとステータスにエラー表示
+                # エラー時は空のDataFrameとエラーステータスを返す
+                return pd.DataFrame(), error_msg
         else:
             # ファイルが選択されていない場合
             logging.warning("実行ボタンが押されましたが、ファイルが選択されていません。")
-            return "ファイルを選択してください。", "ファイルを選択してください。"  # Textboxとステータスにメッセージ表示
+            # 空のDataFrameとメッセージを返す
+            return pd.DataFrame(), "ファイルを選択してください。"
 
     run_button.click(
         fn=run_processing_wrapper,
         inputs=[file_dropdown],  # file_upload を削除
-        outputs=[output_text, status_text],  # output_table を output_text に変更
+        outputs=[output_table, status_text],  # output_text を output_table に変更
         # APIコールを無効化 (UIのテスト用)
         # api_name="run_processing"
     )
